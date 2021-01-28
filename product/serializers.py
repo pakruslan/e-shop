@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Product, Category
+from .models import Product, Category,Comment
 
 
 # class ProductSerializer(serializers.Serializer):
@@ -12,6 +12,14 @@ from .models import Product, Category
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
+        fields = '__all__'
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.CharField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(),write_only=True)
+    class Meta:
+        model = Comment
         fields = '__all__'
 
 
@@ -28,14 +36,16 @@ class ProductSerializer(serializers.ModelSerializer):
             url = image_obj.image.url
             if request is not None:
                 url = request.build_absolute_uri(url)
-            return url 
+            return url
         return ''
+
+
 
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['image'] = self._get_image_url(instance)
-        representation['categories'] = CategorySerializer(instance.categories.all(), many=True).data 
+        representation['categories'] = CategorySerializer(instance.categories.all(), many=True).data
         return representation
 
 

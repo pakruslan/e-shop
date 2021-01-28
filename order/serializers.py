@@ -16,7 +16,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
     class Meta:
-        model  = Order 
+        model = Order
         exclude = ('user', 'status')
 
     def create(self, validated_data):
